@@ -1,0 +1,27 @@
+plugins {
+	id 'org.springframework.boot' version '2.2.0.BUILD-SNAPSHOT'
+	id 'java'
+	id 'war'
+}
+
+apply plugin: 'io.spring.dependency-management'
+
+group = 'org.accsp'
+version = '0.0.2'
+sourceCompatibility = '1.8'
+
+repositories {
+	mavenCentral()
+	maven { url 'https://repo.spring.io/snapshot' }
+	maven { url 'https://repo.spring.io/milestone' }
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	implementation 'com.webauthn4j:webauthn4j-test:0.9.4.RELEASE'
+	implementation 'com.webauthn4j:webauthn4j-util:0.9.4.RELEASE'
+	implementation 'com.webauthn4j:webauthn4j-core:0.9.4.RELEASE'
+	implementation 'com.webauthn4j:webauthn4j-metadata:0.9.4.RELEASE'
+}
