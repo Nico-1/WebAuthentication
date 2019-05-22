@@ -2,11 +2,17 @@ package org.accsp.webauthn;
 
 import java.util.concurrent.atomic.AtomicLong;
 
+
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.io.FileOutputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.util.Base64;
 
 
@@ -14,8 +20,14 @@ import java.util.Base64;
 import com.webauthn4j.data.WebAuthnAuthenticationContext;
 import com.webauthn4j.data.WebAuthnRegistrationContext;
 import com.webauthn4j.authenticator.*;
+import com.webauthn4j.converter.jackson.WebAuthnCBORModule;
+import com.webauthn4j.converter.jackson.WebAuthnJSONModule;
 import com.webauthn4j.converter.jackson.deserializer.CredentialPublicKeyEnvelope;
 import com.webauthn4j.converter.jackson.deserializer.CredentialPublicKeyEnvelopeDeserializer;
+import com.webauthn4j.converter.util.JsonConverter;
+import com.webauthn4j.data.attestation.authenticator.AAGUID;
+import com.webauthn4j.data.attestation.authenticator.AttestedCredentialData;
+import com.webauthn4j.data.attestation.authenticator.AuthenticatorData;
 import com.webauthn4j.data.attestation.authenticator.CredentialPublicKey;
 import com.webauthn4j.data.attestation.authenticator.EC2CredentialPublicKey;
 import com.webauthn4j.data.attestation.authenticator.RSACredentialPublicKey;
@@ -34,6 +46,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+import com.google.gson.*;
 
 @RestController
 public class WebController {
@@ -49,49 +62,77 @@ public class WebController {
 	    
 	    
 	    @RequestMapping("/convert")
-	    public String convert(@RequestParam(value="name", defaultValue="World") String name) {
+	    public String convert(@RequestBody String uInfo) {
 	    	
 	    	
-
+	    	JsonConverter jConvert = new JsonConverter();
+	    	
+	    	JsonParser jsonParser = new JsonParser();
+	    	JsonObject jsonRoot = jsonParser.parse(uInfo).getAsJsonObject();
+	    	
+	    	/**
+	    	 JsonObject credData = jsonRoot.getAsJsonObject("attestedCredentialData");
+	    	 JsonElement attestationStatement = jsonRoot.get("attestationStatement");
+	    	 JsonArray transports = jsonRoot.get("transports").getAsJsonArray();
+	    	 long counter = jsonRoot.get("counter").getAsLong();
+	    	 
+	    	 AttestedCredentialData recData = new AttestedCredentialData();
+	    	 AAGUID aaguid = new AAGUID(credData.getAsJsonObject("aaguid").getAsJsonObject("value").getAsString());
+	    	 byte[] credId = credData.getAsJsonObject("credentialId").getAsString().getBytes();
+	    	
+	    	**/
+	    	
+	    	byte[] credId = Base64.getDecoder().decode(jsonRoot.getAsJsonObject("attestedCredentialData")
+	    														.get("credentialId").getAsString().getBytes());
+	    	
+	    	AAGUID aaguid = new AAGUID(jsonRoot.getAsJsonObject("attestedCredentialData")
+	    										.getAsJsonObject("aaguid")
+	    										.get("value").getAsString());
+	    	
+	    	System.out.println("aaguid: "+  aaguid.toString()); 
+	    	//System.out.println("bytes: "+  Base64.getEncoder().encodeToString(credId));
+	    	
+	    	
 	    	ObjectMapper jsonMapper = new ObjectMapper();
+	    	jsonMapper.registerModule(new  WebAuthnCBORModule(jConvert, jConvert.getCborConverter()));
+	    	jsonMapper.registerModule(new WebAuthnJSONModule(jConvert, jConvert.getCborConverter()));
 	    	
-	    	SimpleModule module =
-	    			  new SimpleModule("CredentialPublicKeyEnvelopeDeserializer", new Version(1, 0, 0, null, null, null));
-	    	
-	    	
-	    	String json = "{\r\n" + 
-	    			"	\"2\": \"ZQTJnE6sXLYsF02AxdWALUHvJc/8zoltbcyJfk6vIuiQrBavL+0rVgtumEh++qsDZPBZGDC7qYLDBsnsqqEN0Q==\",\r\n" + 
-	    			"	\"3\": -7,\r\n" + 
-	    			"	\"-1\": 1,\r\n" + 
-	    			"	\"-2\": \"+3pPz7JghAAP2FcKhX5E916WnxAgwO16OaYTbZPQ3Sc=\",\r\n" + 
-	    			"	\"-3\": \"CK0hcxpNgIEtmKBZ598iY3yxn3SEc4YYdhtn6aNPVso=\",\r\n" + 
-	    			"	\"1\": 2\r\n" + 
-	    			"}";
 	    	
 	    	try {
 	    	
-	    		
-	    	module.addDeserializer(CredentialPublicKeyEnvelope.class, new CredentialPublicKeyEnvelopeDeserializer());
-	    	jsonMapper.registerModule(module);
-	    	CredentialPublicKey credE = jsonMapper.readValue(json, CredentialPublicKey.class);
 	    	
-	    	if (true) {
-	    	return  jsonMapper.writeValueAsString(credE);
-	    	}	    	
+ 
+	       String res = jsonRoot.getAsJsonObject("attestedCredentialData").getAsJsonObject("credentialPublicKey").toString();
+	    	CredentialPublicKey credKey = jsonMapper.readValue(res, CredentialPublicKey.class);
+	    	
+	   
+	    	
+	    	AttestedCredentialData attData = new AttestedCredentialData(aaguid, credId,  credKey);
+	    	
+	    		Gson gson = new Gson();
+		    	return gson.toJson(attData);
+	    	
+	    	//return "big";
 	    	
 	    	}
+	    	
 	    	catch(Exception e) {
 	    		return "Error with parser, " + e.toString();
 	    	}
 	    	
-	    	return "done";
+	     		/**authenticator = gson.fromJson(resss, Authenticator.class);
+	     	**/
+	     	
+
+	    	
+	    //	return "done";
 	    	
 	    }
 	    
 	    
 	    
 	    @RequestMapping("/registration")
-	    public ResultRegistration newRegistration(@RequestBody UserRegistration uReg) {
+	    public AuthenticatorData newRegistration(@RequestBody UserRegistration uReg) {
 	       
 	    	
 	    	byte[] clientDataJSON = uReg.clientDataJSON.getBytes(); 
@@ -163,14 +204,25 @@ public class WebController {
 	     	        );
 	     	
 	     	System.out.println("authenticator: " + jsonMapper.writeValueAsString(authenticator));
-
+	     	
+	     	
+	     		/**authenticator = gson.fromJson(resss, Authenticator.class);
+	     	**/
+	     	
+	     	//Gson gson = new Gson();
+	     	
+	     //	System.out.println("After GSON is in: " + gson.toJson(response.getAttestationObject().getAuthenticatorData().getAttestedCredentialData()));
+	     	
+	     	 return response.getAttestationObject().getAuthenticatorData();
+	              
+	          
 	     	
 	    	}
 	    	catch (Exception e) {
 	    		 
 	    	}
 	    	
-	    	return userR;
+	    	return null;
 	    	 
 	    }
 	    

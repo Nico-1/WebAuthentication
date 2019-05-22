@@ -24,4 +24,5 @@ dependencies {
 	implementation 'com.webauthn4j:webauthn4j-util:0.9.4.RELEASE'
 	implementation 'com.webauthn4j:webauthn4j-core:0.9.4.RELEASE'
 	implementation 'com.webauthn4j:webauthn4j-metadata:0.9.4.RELEASE'
+	implementation 'com.google.code.gson:gson:2.8.5'
 }
