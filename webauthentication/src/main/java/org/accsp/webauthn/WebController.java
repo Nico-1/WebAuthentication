@@ -24,6 +24,9 @@ import com.webauthn4j.data.attestation.AttestationObject;
 import com.webauthn4j.data.attestation.authenticator.AAGUID;
 import com.webauthn4j.data.attestation.authenticator.AttestedCredentialData;
 import com.webauthn4j.data.attestation.authenticator.CredentialPublicKey;
+import com.webauthn4j.data.attestation.statement.AttestationCertificatePath;
+import com.webauthn4j.data.attestation.statement.AttestationStatement;
+import com.webauthn4j.data.attestation.statement.FIDOU2FAttestationStatement;
 import com.webauthn4j.data.attestation.statement.NoneAttestationStatement;
 import com.webauthn4j.data.client.*;
 import com.webauthn4j.data.client.challenge.Challenge;
@@ -33,9 +36,10 @@ import com.webauthn4j.validator.WebAuthnAuthenticationContextValidationResponse;
 import com.webauthn4j.validator.WebAuthnAuthenticationContextValidator;
 import com.webauthn4j.validator.WebAuthnRegistrationContextValidationResponse;
 import com.webauthn4j.validator.WebAuthnRegistrationContextValidator;
-
-
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.gson.*;
 
 @RestController
@@ -152,18 +156,19 @@ public class WebController {
 	    
 	    
 	    @RequestMapping("/registration")
-	    public AttestationObject newRegistration(@RequestBody UserRegistration uReg) {
+	    public ObjectNode newRegistration(@RequestBody UserRegistration uReg) {
 	       //AuthenticatorData
 	    	
 	    	byte[] clientDataJSON = uReg.clientDataJSON.getBytes(); 
 	    	
 	    	String aObj  = uReg.attestationObject;
-	    	String printRes;
 	    			
 	    	byte[] attestationObject = Base64.getDecoder().decode(aObj.getBytes());
 	    	
-
+	    	
 	    	ObjectMapper jsonMapper = new ObjectMapper();
+	    	jsonMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+
 	    	
 
 	    	Origin origin = new Origin("https", uReg.hostname, uReg.port); /* set origin */
@@ -179,36 +184,34 @@ public class WebController {
 	    	WebAuthnRegistrationContextValidator webAuthnRegistrationContextValidator =
 	    	        WebAuthnRegistrationContextValidator.createNonStrictRegistrationContextValidator();
 	    	
+	    
 	    	WebAuthnRegistrationContextValidationResponse response = webAuthnRegistrationContextValidator.validate(registrationContext);
-	    	//ResultRegistration userR = new ResultRegistration();
-	    	
+    	
 	    	
 	    	try {
 	    		
-	    	
-	     	Authenticator authenticator =
-	     	        new AuthenticatorImpl( // You may create your own Authenticator implementation to save friendly authenticator name
-	     	                response.getAttestationObject().getAuthenticatorData().getAttestedCredentialData(),
-	     	                response.getAttestationObject().getAttestationStatement(),
-	     	                response.getAttestationObject().getAuthenticatorData().getSignCount()
-	     	        );
-	     	
-	     	System.out.println("authenticator: " + jsonMapper.writeValueAsString(authenticator));
-	     	
-	     	
-	     	
-	     //	System.out.println("After GSON is in: " + gson.toJson(response.getAttestationObject().getAuthenticatorData().getAttestedCredentialData()));
-	     	
-	     	// return response.getAttestationObject().getAuthenticatorData();
-	       return response.getAttestationObject();       
+	    		JsonNode statement = jsonMapper.readTree(jsonMapper.writeValueAsString(response.getAttestationObject().getAttestationStatement()));
+	    		JsonNode attData = jsonMapper.readTree(jsonMapper.writeValueAsString(response.getAttestationObject().getAuthenticatorData()));
+
+	    			     	  	
+	     	  	ObjectNode responseNode = jsonMapper.createObjectNode();
+	     	  	responseNode.set("authData", attData);
+	     	  	responseNode.set("statetement", statement);
+	     	  	
+	     	  	System.out.println("final str: " + responseNode.toString());
+	     	  	
+	     	  	
+	     	  	
+	     	  	return responseNode;       
 	          
 	     	
 	    	}
 	    	catch (Exception e) {
 	    		 
+	    		System.out.println("Got issues "+ e.getMessage());
 	    	}
 	    	
-	    	return null;
+	    	return jsonMapper.createObjectNode();
 	    	 
 	    }
 	    
