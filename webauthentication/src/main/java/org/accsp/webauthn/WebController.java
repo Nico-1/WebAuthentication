@@ -247,13 +247,13 @@ public class WebController {
 	    	
 	    	try {
 	    		
-	    		JsonNode statement = jsonMapper.readTree(jsonMapper.writeValueAsString(response.getAttestationObject().getAttestationStatement()));
+	    		//JsonNode statement = jsonMapper.readTree(jsonMapper.writeValueAsString(response.getAttestationObject().getAttestationStatement()));
 	    		JsonNode attData = jsonMapper.readTree(jsonMapper.writeValueAsString(response.getAttestationObject().getAuthenticatorData()));
 
 	    			     	  	
 	     	  	ObjectNode responseNode = jsonMapper.createObjectNode();
 	     	  	responseNode.set("authData", attData);
-	     	  	responseNode.set("statetement", statement);
+	     	  	//responseNode.set("statetement", statement);
 	  
 	     	  	
 	     	  	return responseNode;       
