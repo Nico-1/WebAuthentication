@@ -19,6 +19,7 @@ import com.webauthn4j.converter.jackson.WebAuthnJSONModule;
 import com.webauthn4j.converter.util.JsonConverter;
 import com.webauthn4j.data.attestation.authenticator.AAGUID;
 import com.webauthn4j.data.attestation.authenticator.AttestedCredentialData;
+import com.webauthn4j.data.attestation.authenticator.AuthenticatorData;
 import com.webauthn4j.data.attestation.authenticator.CredentialPublicKey;
 import com.webauthn4j.data.attestation.statement.NoneAttestationStatement;
 import com.webauthn4j.data.client.*;
@@ -29,11 +30,12 @@ import com.webauthn4j.validator.WebAuthnAuthenticationContextValidationResponse;
 import com.webauthn4j.validator.WebAuthnAuthenticationContextValidator;
 import com.webauthn4j.validator.WebAuthnRegistrationContextValidationResponse;
 import com.webauthn4j.validator.WebAuthnRegistrationContextValidator;
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.gson.*;
+
 
 @RestController
 public class WebController {
@@ -43,7 +45,7 @@ public class WebController {
 	    public ObjectNode greeting() {
 	    	
 	    	ObjectNode aNode = new ObjectMapper().createObjectNode();
-    		aNode.put("status", "API is running and active 2.1");
+    		aNode.put("status", "API is running and active 1.0.2");
     		return aNode;
     		
 	   }
@@ -54,41 +56,55 @@ public class WebController {
 	    	
 	    	
 	    	JsonConverter jConvert = new JsonConverter();
+	    	ObjectNode jsonRoot ;
 	    	
 	    	ObjectMapper jsonMapper = new ObjectMapper();
 	    	jsonMapper.registerModule(new WebAuthnCBORModule(jConvert, jConvert.getCborConverter()));
 	    	jsonMapper.registerModule(new WebAuthnJSONModule(jConvert, jConvert.getCborConverter()));
 	    	
-	    	JsonParser jsonParser = new JsonParser();
-	    	JsonObject jsonRoot = jsonParser.parse(uInfo).getAsJsonObject();
 	    
+	    	try {
+	    	jsonRoot =  (ObjectNode) new ObjectMapper().readTree(uInfo) ;
+	    	
+	    	}
+	    	catch (Exception e ) {
+	    		ObjectNode errorNode = new ObjectMapper().createObjectNode();
+	    		errorNode.put("error 1", e.getMessage());
+	    		return errorNode;
+	    
+	    	}
+	    	
+	    	
 
-	    	String rpId = jsonRoot.get("hostname").getAsString();
+	    	String rpId = jsonRoot.get("hostname").asText();
+	    	
+	    	
 	    	Origin origin = new Origin("https", rpId, 
-	    								jsonRoot.get("port").getAsInt()); 
+	    								jsonRoot.get("port").asInt()); 
 	    	
 	    	
 	    	byte[] tokenBindingId = null /* set tokenBindingId */;
 	    	//
-	    	boolean userVerificationRequired = jsonRoot.getAsJsonObject("authData")					   
-						.get("flagUV").getAsBoolean();
+	    	boolean userVerificationRequired = jsonRoot.get("authData")					   
+						.get("flagUV").asBoolean();
+	    	
 	    	
 	    	//boolean userVerificationRequired = false;
 	    	
-	    	byte[] clientDataJSON = jsonRoot.get("clientDataJSON").getAsString().getBytes();
-	    	byte[] authenticatorData = Base64.getDecoder().decode(jsonRoot.get("authenticatorData").getAsString().getBytes());
-	    	byte[] signature = Base64.getDecoder().decode(jsonRoot.get("signature").getAsString().getBytes());
+	    	byte[] clientDataJSON = jsonRoot.get("clientDataJSON").asText().getBytes();
+	    	byte[] authenticatorData = Base64.getDecoder().decode(jsonRoot.get("authenticatorData").asText().getBytes());
+	    	byte[] signature = Base64.getDecoder().decode(jsonRoot.get("signature").asText().getBytes());
 	    	
 	    	String challengeStr = "";
 	    	
 	    	try {	    	
 	    		
-	    	challengeStr =	Base64.getEncoder().encodeToString(jsonRoot.get("challenge").getAsString().getBytes("utf-8"));
+	    	challengeStr =	Base64.getEncoder().encodeToString(jsonRoot.get("challenge").asText().getBytes("utf-8"));
 	    	}
 	    	catch(Exception e) {
 	    		
 	    		ObjectNode errorNode = new ObjectMapper().createObjectNode();
-	    		errorNode.put("error", e.getMessage());
+	    		errorNode.put("error 2", e.getMessage());
 	    		return errorNode;
 	    	}
 	    	
@@ -97,9 +113,9 @@ public class WebController {
 	        ServerProperty serverProperty = new ServerProperty(origin, rpId, challenge, tokenBindingId);
 
 	        
-	        byte[] credId = Base64.getDecoder().decode(jsonRoot.getAsJsonObject("authData")
-	    												   .getAsJsonObject("attestedCredentialData")
-	    													.get("credentialId").getAsString().getBytes());
+	        byte[] credId = Base64.getDecoder().decode(jsonRoot.get("authData")
+	    												   .get("attestedCredentialData")
+	    													.get("credentialId").asText().getBytes());
 	    	
 	        
 	      
@@ -120,30 +136,39 @@ public class WebController {
 	        WebAuthnAuthenticationContextValidator webAuthnAuthenticationContextValidator =
 	                new WebAuthnAuthenticationContextValidator();
 	        
-	    	AAGUID aaguid = new AAGUID(jsonRoot.getAsJsonObject("authData")
-	    										.getAsJsonObject("attestedCredentialData")
-	    										.getAsJsonObject("aaguid")
-	    										.get("value").getAsString());
+	    	AAGUID aaguid = new AAGUID(jsonRoot.get("authData")
+	    										.get("attestedCredentialData")
+	    										.get("aaguid")
+	    										.get("value").asText());
 		    
 	    	
-	    	 
-	    	String credKeyText = jsonRoot.getAsJsonObject("authData")
-	    						.getAsJsonObject("attestedCredentialData")
-	    						 .getAsJsonObject("credentialPublicKey").toString();
+	    	String credKeyText = jsonRoot.get("authData")
+						.get("attestedCredentialData")
+						 .get("credentialPublicKey").toString();
 	    	
 	    	
 	    	 
-	    	int lastSignCount =  jsonRoot.get("lastSignCount").getAsInt();
+	    	int lastSignCount =  jsonRoot.get("lastSignCount").asInt();
 	    
-	    
+	    	
+	    	
+	    	try {
+	    	
+	    	AuthenticatorData auth = jsonMapper.readValue(jsonRoot.get("authData").toString(), AuthenticatorData.class);
+	    	System.out.println("new auth:" + auth.getAttestedCredentialData().toString());
+	    	}
+	    	
+	    	catch(Exception e) {
+	    		System.out.println("you still got issues: " + e.getMessage());
+	    		
+	    	}
 	    	 
 	    	try {
 	    	
 	    	CredentialPublicKey credKey = jsonMapper.readValue(credKeyText, CredentialPublicKey.class);
-	    
+	   	
 	    	AttestedCredentialData attData = new AttestedCredentialData(aaguid, credId,  credKey);
 	    	
-	    		
 	    	 Authenticator authenticator =
 		     	        new AuthenticatorImpl( // You may create your own Authenticator implementation to save friendly authenticator name
 		     	                attData,
@@ -153,10 +178,8 @@ public class WebController {
 		    
 	    	WebAuthnAuthenticationContextValidationResponse response = webAuthnAuthenticationContextValidator.validate( authenticationContext, authenticator);
 
-	    	
 	    	JsonNode result = jsonMapper.readTree(jsonMapper.writeValueAsString(response));
-    		
-    			     	  	
+    		     	  	
      	  	ObjectNode responseNode = jsonMapper.createObjectNode();
      	  	responseNode.set("result", result);
      	  	responseNode.put("signCount",  response.getAuthenticatorData().getSignCount());
@@ -168,7 +191,7 @@ public class WebController {
 	    	
 	    	catch(Exception e) {
 	    		ObjectNode errorNode = new ObjectMapper().createObjectNode();
-	    		errorNode.put("error", e.getMessage());
+	    		errorNode.put("error 4", e.getMessage());
 	    		return errorNode;
 	    		
 	    		
@@ -211,7 +234,7 @@ public class WebController {
 	    	byte[] tokenBindingId = null /* set tokenBindingId */;
 	    	
 	    	ServerProperty serverProperty = new ServerProperty(origin, rpId, challenge, tokenBindingId);
-	    	boolean userVerificationRequired = false;
+	    	boolean userVerificationRequired = uReg.verifyUser;
 	    	
 	    	WebAuthnRegistrationContext registrationContext = new WebAuthnRegistrationContext(clientDataJSON, attestationObject, serverProperty, userVerificationRequired);
 	    	
