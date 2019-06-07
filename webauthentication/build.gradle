@@ -20,10 +20,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	implementation 'com.webauthn4j:webauthn4j-test:0.9.6.RELEASE'
-	implementation 'com.webauthn4j:webauthn4j-util:0.9.6.RELEASE'
 	implementation 'com.webauthn4j:webauthn4j-core:0.9.6.RELEASE'
-	implementation 'com.webauthn4j:webauthn4j-metadata:0.9.6.RELEASE'
 	implementation 'org.projectlombok:lombok:1.18.8'
 	
 }

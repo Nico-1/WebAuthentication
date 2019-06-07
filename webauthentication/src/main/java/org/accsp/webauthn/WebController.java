@@ -8,9 +8,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Base64;
+import java.util.Collections;
+import java.util.List;
 
-
-
+import com.webauthn4j.data.AuthenticatorTransport;
+import com.webauthn4j.data.PublicKeyCredentialDescriptor;
+import com.webauthn4j.data.PublicKeyCredentialRequestOptions;
+import com.webauthn4j.data.PublicKeyCredentialType;
+import com.webauthn4j.data.UserVerificationRequirement;
 import com.webauthn4j.data.WebAuthnAuthenticationContext;
 import com.webauthn4j.data.WebAuthnRegistrationContext;
 import com.webauthn4j.authenticator.*;
@@ -26,6 +31,7 @@ import com.webauthn4j.data.client.*;
 import com.webauthn4j.data.client.challenge.Challenge;
 import com.webauthn4j.data.client.challenge.DefaultChallenge;
 import com.webauthn4j.server.ServerProperty;
+import com.webauthn4j.util.CollectionUtil;
 import com.webauthn4j.validator.WebAuthnAuthenticationContextValidationResponse;
 import com.webauthn4j.validator.WebAuthnAuthenticationContextValidator;
 import com.webauthn4j.validator.WebAuthnRegistrationContextValidationResponse;
@@ -50,6 +56,35 @@ public class WebController {
     		
 	   }
 	    
+	    @RequestMapping("/credential")
+	    public PublicKeyCredentialRequestOptions credential() {
+	    	
+	    	
+	    String rpId = "example.com";
+        long timeout = 0;
+        Challenge challenge = new DefaultChallenge();
+        byte[] credentialId = new byte[32];
+        List<PublicKeyCredentialDescriptor> allowCredentials = Collections.singletonList(
+                new PublicKeyCredentialDescriptor(
+                        PublicKeyCredentialType.PUBLIC_KEY,
+                        credentialId,
+                        CollectionUtil.unmodifiableSet(AuthenticatorTransport.USB, AuthenticatorTransport.NFC, AuthenticatorTransport.BLE)
+                )
+        );
+
+        PublicKeyCredentialRequestOptions credentialRequestOptions = new PublicKeyCredentialRequestOptions(
+                challenge,
+                timeout,
+                rpId,
+                allowCredentials,
+                UserVerificationRequirement.DISCOURAGED,
+                null
+);
+        
+        return credentialRequestOptions;
+        
+        
+	    }
 	    
 	    @RequestMapping("/authenticate")
 	    public ObjectNode authenticate(@RequestBody String uInfo) {
@@ -117,9 +152,7 @@ public class WebController {
 	    												   .get("attestedCredentialData")
 	    													.get("credentialId").asText().getBytes());
 	    	
-	        
-	      
-    		
+	      	
 
 	        WebAuthnAuthenticationContext authenticationContext =
 	                new WebAuthnAuthenticationContext(
@@ -151,17 +184,6 @@ public class WebController {
 	    	int lastSignCount =  jsonRoot.get("lastSignCount").asInt();
 	    
 	    	
-	    	
-	    	try {
-	    	
-	    	AuthenticatorData auth = jsonMapper.readValue(jsonRoot.get("authData").toString(), AuthenticatorData.class);
-	    	System.out.println("new auth:" + auth.getAttestedCredentialData().toString());
-	    	}
-	    	
-	    	catch(Exception e) {
-	    		System.out.println("you still got issues: " + e.getMessage());
-	    		
-	    	}
 	    	 
 	    	try {
 	    	
