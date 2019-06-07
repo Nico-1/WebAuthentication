@@ -247,7 +247,6 @@ public class WebController {
 	    	ObjectMapper jsonMapper = new ObjectMapper();
 	    	jsonMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
 
-	    	
 
 	    	Origin origin = new Origin("https", uReg.hostname, uReg.port); /* set origin */
 	    	String rpId = uReg.hostname;
