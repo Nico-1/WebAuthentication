@@ -50,7 +50,7 @@ public class WebController {
 	    public ObjectNode greeting() {
 	    	
 	    	ObjectNode aNode = new ObjectMapper().createObjectNode();
-    		aNode.put("status", "API is running and active 1.0.2");
+    		aNode.put("status", "API is running and active 1.0.3");
     		return aNode;
     		
 	   }
@@ -103,7 +103,8 @@ public class WebController {
 	    	}
 	    	catch (Exception e ) {
 	    		ObjectNode errorNode = new ObjectMapper().createObjectNode();
-	    		errorNode.put("error 1", e.getMessage());
+	    		errorNode.put("error", e.getMessage());
+	    		errorNode.put("location", "1");
 	    		return errorNode;
 	    
 	    	}
@@ -119,11 +120,9 @@ public class WebController {
 	    	
 	    	byte[] tokenBindingId = null /* set tokenBindingId */;
 	    	//
-	    	boolean userVerificationRequired = jsonRoot.get("authData")					   
-						.get("flagUV").asBoolean();
 	    	
 	    	
-	    	//boolean userVerificationRequired = false;
+	    	boolean userVerificationRequired = jsonRoot.get("verifyUser").asBoolean();
 	    	
 	    	byte[] clientDataJSON = jsonRoot.get("clientDataJSON").asText().getBytes();
 	    	byte[] authenticatorData = Base64.getDecoder().decode(jsonRoot.get("authenticatorData").asText().getBytes());
@@ -138,7 +137,8 @@ public class WebController {
 	    	catch(Exception e) {
 	    		
 	    		ObjectNode errorNode = new ObjectMapper().createObjectNode();
-	    		errorNode.put("error 2", e.getMessage());
+	    		errorNode.put("error", e.getMessage());
+	    		errorNode.put("location", "2");
 	    		return errorNode;
 	    	}
 	    	
@@ -212,7 +212,8 @@ public class WebController {
 	    	
 	    	catch(Exception e) {
 	    		ObjectNode errorNode = new ObjectMapper().createObjectNode();
-	    		errorNode.put("error 4", e.getMessage());
+	    		errorNode.put("error", e.getMessage());
+	    		errorNode.put("location", "3");
 	    		return errorNode;
 	    		
 	    		
