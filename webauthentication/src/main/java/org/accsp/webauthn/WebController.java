@@ -50,7 +50,8 @@ public class WebController {
 	    public ObjectNode greeting() {
 	    	
 	    	ObjectNode aNode = new ObjectMapper().createObjectNode();
-    		aNode.put("status", "API is running and active 1.0.3");
+	    	var greetMsg = "API is running and active 1.0.5";
+    		aNode.put("status", greetMsg );
     		return aNode;
     		
 	   }
