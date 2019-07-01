@@ -7,7 +7,7 @@ plugins {
 apply plugin: 'io.spring.dependency-management'
 
 group = 'org.accsp'
-version = '1.0.5'
+version = '1.0.6'
 sourceCompatibility = '11'
 
 repositories {
@@ -22,5 +22,6 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	implementation 'com.webauthn4j:webauthn4j-core:0.9.6.RELEASE'
 	implementation 'org.projectlombok:lombok:1.18.8'
+	implementation 'com.auth0:java-jwt:3.8.1'
 	
 }

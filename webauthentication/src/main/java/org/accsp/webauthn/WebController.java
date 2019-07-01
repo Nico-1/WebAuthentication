@@ -1,20 +1,14 @@
 package org.accsp.webauthn;
 
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
 import java.util.Base64;
-import java.util.Collections;
-import java.util.List;
-
-import com.webauthn4j.data.AuthenticatorTransport;
-import com.webauthn4j.data.PublicKeyCredentialDescriptor;
-import com.webauthn4j.data.PublicKeyCredentialRequestOptions;
-import com.webauthn4j.data.PublicKeyCredentialType;
-import com.webauthn4j.data.UserVerificationRequirement;
 import com.webauthn4j.data.WebAuthnAuthenticationContext;
 import com.webauthn4j.data.WebAuthnRegistrationContext;
 import com.webauthn4j.authenticator.*;
@@ -23,14 +17,14 @@ import com.webauthn4j.converter.jackson.WebAuthnJSONModule;
 import com.webauthn4j.converter.util.JsonConverter;
 import com.webauthn4j.data.attestation.authenticator.AAGUID;
 import com.webauthn4j.data.attestation.authenticator.AttestedCredentialData;
-import com.webauthn4j.data.attestation.authenticator.AuthenticatorData;
+
 import com.webauthn4j.data.attestation.authenticator.CredentialPublicKey;
 import com.webauthn4j.data.attestation.statement.NoneAttestationStatement;
 import com.webauthn4j.data.client.*;
 import com.webauthn4j.data.client.challenge.Challenge;
 import com.webauthn4j.data.client.challenge.DefaultChallenge;
 import com.webauthn4j.server.ServerProperty;
-import com.webauthn4j.util.CollectionUtil;
+
 import com.webauthn4j.validator.WebAuthnAuthenticationContextValidationResponse;
 import com.webauthn4j.validator.WebAuthnAuthenticationContextValidator;
 import com.webauthn4j.validator.WebAuthnRegistrationContextValidationResponse;
@@ -40,51 +34,57 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.JWT;
+import java.util.Date;
+import java.util.Calendar;
+
 
 
 @RestController
 public class WebController {
 
+
+	//Uses a random string as your JWT secret. But you can override this here.
+	@Value("${jwt.secret}")
+	private String myJWTSecret;
+
 	
-	    @RequestMapping("/greeting")
+	    @RequestMapping("/status")
 	    public ObjectNode greeting() {
 	    	
 	    	ObjectNode aNode = new ObjectMapper().createObjectNode();
-	    	var greetMsg = "API is running and active 1.0.5";
+	    	var greetMsg = "API is running and active 1.0.6";
     		aNode.put("status", greetMsg );
     		return aNode;
     		
 	   }
-	    
-	    @RequestMapping("/credential")
-	    public PublicKeyCredentialRequestOptions credential() {
-	    	
-	    	
-	    String rpId = "example.com";
-        long timeout = 0;
-        Challenge challenge = new DefaultChallenge();
-        byte[] credentialId = new byte[32];
-        List<PublicKeyCredentialDescriptor> allowCredentials = Collections.singletonList(
-                new PublicKeyCredentialDescriptor(
-                        PublicKeyCredentialType.PUBLIC_KEY,
-                        credentialId,
-                        CollectionUtil.unmodifiableSet(AuthenticatorTransport.USB, AuthenticatorTransport.NFC, AuthenticatorTransport.BLE)
-                )
-        );
 
-        PublicKeyCredentialRequestOptions credentialRequestOptions = new PublicKeyCredentialRequestOptions(
-                challenge,
-                timeout,
-                rpId,
-                allowCredentials,
-                UserVerificationRequirement.DISCOURAGED,
-                null
-);
-        
-        return credentialRequestOptions;
-        
-        
-	    }
+
+	@RequestMapping("/challenge")
+	public ObjectNode challengeRequest(@RequestParam(value="rpId", defaultValue="none") String rpId) {
+
+
+		ObjectNode aNode = new ObjectMapper().createObjectNode();
+
+		Algorithm algorithm = Algorithm.HMAC256(myJWTSecret);
+
+
+		Calendar c = Calendar.getInstance();
+		c.setTime(new Date());
+		c.add(Calendar.MINUTE, 15);
+
+		String myChallenge = JWT.create()
+				.withIssuer(rpId)
+				.withExpiresAt(c.getTime())
+				.sign(algorithm);
+
+		aNode.put("challenge", myChallenge);
+
+		return aNode;
+
+	}
+
 	    
 	    @RequestMapping("/authenticate")
 	    public ObjectNode authenticate(@RequestBody String uInfo) {
@@ -145,7 +145,7 @@ public class WebController {
 	    	
 	    	Challenge challenge = new DefaultChallenge(challengeStr);
 	    	
-	        ServerProperty serverProperty = new ServerProperty(origin, rpId, challenge, tokenBindingId);
+	        var serverProperty = new ServerProperty(origin, rpId, challenge, tokenBindingId);
 
 	        
 	        byte[] credId = Base64.getDecoder().decode(jsonRoot.get("authData")
@@ -154,7 +154,7 @@ public class WebController {
 	    	
 	      	
 
-	        WebAuthnAuthenticationContext authenticationContext =
+	        var authenticationContext =
 	                new WebAuthnAuthenticationContext(
 	                        credId,
 	                        clientDataJSON,
@@ -166,8 +166,7 @@ public class WebController {
 	        
 	   	
 	   	 
-	        WebAuthnAuthenticationContextValidator webAuthnAuthenticationContextValidator =
-	                new WebAuthnAuthenticationContextValidator();
+	        var webAuthnAuthenticationContextValidator =     new WebAuthnAuthenticationContextValidator();
 	        
 	    	AAGUID aaguid = new AAGUID(jsonRoot.get("authData")
 	    										.get("attestedCredentialData")
@@ -198,7 +197,7 @@ public class WebController {
 		     	                lastSignCount 
 		     	        );
 		    
-	    	WebAuthnAuthenticationContextValidationResponse response = webAuthnAuthenticationContextValidator.validate( authenticationContext, authenticator);
+	    	var response = webAuthnAuthenticationContextValidator.validate( authenticationContext, authenticator);
 
 	    	JsonNode result = jsonMapper.readTree(jsonMapper.writeValueAsString(response));
     		     	  	
@@ -252,7 +251,7 @@ public class WebController {
 
 	    	Origin origin = new Origin("https", uReg.hostname, uReg.port); /* set origin */
 	    	String rpId = uReg.hostname;
-	    	Challenge challenge = new DefaultChallenge(uReg.challenge); /* set challenge */;
+	    	Challenge challenge = new DefaultChallenge(uReg.challenge); /* set challenge */
 	    	byte[] tokenBindingId = null /* set tokenBindingId */;
 	    	
 	    	ServerProperty serverProperty = new ServerProperty(origin, rpId, challenge, tokenBindingId);
