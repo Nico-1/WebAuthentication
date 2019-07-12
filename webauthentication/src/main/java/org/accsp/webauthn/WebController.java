@@ -114,8 +114,7 @@ public class WebController {
 	    	String rpId = jsonRoot.get("hostname").asText();
 	    	
 	    	
-	    	Origin origin = new Origin("https", rpId, 
-	    								jsonRoot.get("port").asInt()); 
+	    	Origin origin = new Origin("https", rpId, jsonRoot.get("port").asInt());
 	    	
 	    	
 	    	byte[] tokenBindingId = null /* set tokenBindingId */;
@@ -168,14 +167,14 @@ public class WebController {
 	        var webAuthnAuthenticationContextValidator =     new WebAuthnAuthenticationContextValidator();
 	        
 	    	AAGUID aaguid = new AAGUID(jsonRoot.get("authData")
-	    										.get("attestedCredentialData")
-	    										.get("aaguid")
-	    										.get("value").asText());
+                            .get("attestedCredentialData")
+                            .get("aaguid")
+                            .get("value").asText());
 		    
 	    	
 	    	String credKeyText = jsonRoot.get("authData")
 						.get("attestedCredentialData")
-						 .get("credentialPublicKey").toString();
+                        .get("credentialPublicKey").toString();
 	    	
 	    	
 	    	 

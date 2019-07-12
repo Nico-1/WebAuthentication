@@ -1,5 +1,7 @@
 # WebAuthentication
-Web Authentication Compute library
+
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+<br/>Web Authentication Compute library
 
 This library can be used inside and outside of the Java environment to do "webauthn-as-a-microservice".
 
