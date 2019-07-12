@@ -47,7 +47,6 @@ public class WebController {
 	//Uses a random string as your JWT secret. But you can override this here.
 	@Value("${jwt.secret}")
 	private String myJWTSecret;
-
 	
 	    @RequestMapping("/status")
 	    public ObjectNode greeting() {
@@ -58,8 +57,6 @@ public class WebController {
     		return aNode;
     		
 	   }
-
-
 
 	@RequestMapping("/challenge")
 	public ObjectNode challengeRequest(@RequestHeader Map<String, String> headers) {
