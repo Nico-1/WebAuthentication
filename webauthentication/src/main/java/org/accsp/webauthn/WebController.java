@@ -2,10 +2,8 @@ package org.accsp.webauthn;
 
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
 
 import java.time.LocalDateTime;
 import java.util.Base64;
@@ -38,9 +36,10 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.JWT;
 import java.util.Date;
 import java.util.Calendar;
+import java.util.Map;
 
-
-
+//Allow and control cross-origin requests by uncommenting and modifying the line below
+//@CrossOrigin(origins = "https://nico-1.github.io", methods = {RequestMethod.OPTIONS,RequestMethod.GET,RequestMethod.PUT,RequestMethod.POST})
 @RestController
 public class WebController {
 
@@ -54,15 +53,19 @@ public class WebController {
 	    public ObjectNode greeting() {
 	    	
 	    	ObjectNode aNode = new ObjectMapper().createObjectNode();
-	    	var greetMsg = "API is running and active 1.0.6";
+	    	var greetMsg = "API is running and active 1.0.7";
     		aNode.put("status", greetMsg );
     		return aNode;
     		
 	   }
 
 
+
 	@RequestMapping("/challenge")
-	public ObjectNode challengeRequest(@RequestParam(value="rpId", defaultValue="none") String rpId) {
+	public ObjectNode challengeRequest(@RequestHeader Map<String, String> headers) {
+
+
+		String rpOrigin = headers.getOrDefault("origin", "none");
 
 
 		ObjectNode aNode = new ObjectMapper().createObjectNode();
@@ -75,7 +78,7 @@ public class WebController {
 		c.add(Calendar.MINUTE, 15);
 
 		String myChallenge = JWT.create()
-				.withIssuer(rpId)
+				.withAudience(rpOrigin)
 				.withExpiresAt(c.getTime())
 				.sign(algorithm);
 
@@ -85,7 +88,6 @@ public class WebController {
 
 	}
 
-	    
 	    @RequestMapping("/authenticate")
 	    public ObjectNode authenticate(@RequestBody String uInfo) {
 	    	
@@ -221,9 +223,8 @@ public class WebController {
 	     	
 	  	    	
 	    }
-	    
-	    
-	    
+
+
 	    @RequestMapping("/registration")
 	    public ObjectNode newRegistration(@RequestBody UserRegistration uReg) {
 	       //AuthenticatorData
