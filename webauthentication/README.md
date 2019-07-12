@@ -9,6 +9,13 @@ This application can be run on any computer or server with no need for Tomcat. T
 2. Run the command 'java -jar webauthentication.jar'
 3. For this example we'll assume you're running on localhost. If running on a different server, note the url of your machine and be sure the relevant port is open. 
 
+A fully working prototype is [available here](https://nico-1.github.io/WebAuthentication). 
+
+Note: As of July 2019, fully passwordless authentication requires the latest Windows 10 on Microsoft Edge or Firefox.
+Support on Safari is coming soon but available now on [Safari Technology Preview](https://developer.apple.com/safari/technology-preview/). 
+2-factor authentication, however is available on all major browsers on Windows (Edge, Firefox, Chrome)  while Mac users can use Firefox and Chrome. 
+Android users can use Chrome and Firefox on Android for the same. 
+
 Device Registration
 --
 
