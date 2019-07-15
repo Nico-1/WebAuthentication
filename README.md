@@ -24,7 +24,7 @@ Device Registration
 Use Insomnia or any other REST API tool to make the following call:<br/>
 HTTP Method: POST<br/>
 URI: localhost:3030/registration<br/>
-Body Payload (Full working example payload in [the samples folder](src/test/resources) ):
+Body Payload (Full working example payload in [the samples folder](webauthentication/src/test/resources) ):
 ```json
 
 {
