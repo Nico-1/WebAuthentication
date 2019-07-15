@@ -3,11 +3,11 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 <br/>Web Authentication Compute library
 
-This library can be used inside and outside of the Java environment to do "webauthn-as-a-microservice".
+Thanks to the WebAuthn standard, device based authentication is here. And it can be used either as a 2nd factor or for truely passwordless authentication system. This library can be used inside and outside of the Java environment to do "webauthn-as-a-microservice".
 
-This application can be run on any computer or server with no need for Tomcat. The default port is 3030 but can be changed via a command line parameter. For those who wish to compile, this a Spring boot project with gradle build so all options for gradle builds are available to you. 
+This application can be run on any computer or server with no need for Tomcat. The default port is 3030 but can be changed via a command line parameter. For those who wish to compile, this a Spring boot project with gradle build so all options for gradle builds are available to you. Java 11 or greater required. 
 
-1. Compile project and run bootJar task to generate a jar file. Alternatively the included jar file in the binaries branch should work for most users with no changes. It can also be deployed to Tomcat via the war file. 
+1. Compile project and run bootJar task to generate a jar file. Alternatively the included jar file in the [build/libs folder](webauthentication/build/libs) should work for most users with no changes. It can also be deployed to Tomcat via the war file. 
 2. Run the command 'java -jar webauthentication.jar'
 3. For this example we'll assume you're running on localhost. If running on a different server, note the url of your machine and be sure the relevant port is open. 
 
