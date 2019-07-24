@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 
-import java.time.LocalDateTime;
 import java.util.Base64;
 import com.webauthn4j.data.WebAuthnAuthenticationContext;
 import com.webauthn4j.data.WebAuthnRegistrationContext;
@@ -52,7 +51,7 @@ public class WebController {
 	    public ObjectNode greeting() {
 	    	
 	    	ObjectNode aNode = new ObjectMapper().createObjectNode();
-	    	var greetMsg = "API is running and active 1.0.7";
+	    	String greetMsg = "API is running and active 1.0.7";
     		aNode.put("status", greetMsg );
     		return aNode;
     		
@@ -142,17 +141,17 @@ public class WebController {
 	    	}
 	    	
 	    	Challenge challenge = new DefaultChallenge(challengeStr);
-	    	
-	        var serverProperty = new ServerProperty(origin, rpId, challenge, tokenBindingId);
+
+			ServerProperty serverProperty = new ServerProperty(origin, rpId, challenge, tokenBindingId);
 
 	        
 	        byte[] credId = Base64.getDecoder().decode(jsonRoot.get("authData")
 	    												   .get("attestedCredentialData")
 	    													.get("credentialId").asText().getBytes());
-	    	
-	      	
 
-	        var authenticationContext =
+
+
+			WebAuthnAuthenticationContext authenticationContext =
 	                new WebAuthnAuthenticationContext(
 	                        credId,
 	                        clientDataJSON,
@@ -161,10 +160,10 @@ public class WebController {
 	                        serverProperty,
 	                        userVerificationRequired
 	                );
-	        
-	   	
-	   	 
-	        var webAuthnAuthenticationContextValidator =     new WebAuthnAuthenticationContextValidator();
+
+
+
+			WebAuthnAuthenticationContextValidator webAuthnAuthenticationContextValidator =     new WebAuthnAuthenticationContextValidator();
 	        
 	    	AAGUID aaguid = new AAGUID(jsonRoot.get("authData")
                             .get("attestedCredentialData")
@@ -194,8 +193,8 @@ public class WebController {
 		     	                new NoneAttestationStatement(),
 		     	                lastSignCount 
 		     	        );
-		    
-	    	var response = webAuthnAuthenticationContextValidator.validate( authenticationContext, authenticator);
+
+				WebAuthnAuthenticationContextValidationResponse response = webAuthnAuthenticationContextValidator.validate( authenticationContext, authenticator);
 
 	    	JsonNode result = jsonMapper.readTree(jsonMapper.writeValueAsString(response));
     		     	  	
