@@ -3,7 +3,7 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 <br/>Web Authentication Compute library
 
-Thanks to the WebAuthn standard, device based authentication is here. And it can be used either as a 2nd factor or for truely passwordless authentication system. This library can be used inside and outside of the Java environment to do "webauthn-as-a-microservice".
+Thanks to the WebAuthn standard, device based authentication is here. And it can be used either as a 2nd factor or for truly passwordless authentication system. This library can be used inside and outside of the Java environment to do "webauthn-as-a-microservice".
 
 This application can be run on any computer or server with no need for Tomcat. The default port is 3030 but can be changed via a command line parameter. For those who wish to compile, this a Spring boot project with gradle build so all options for gradle builds are available to you. Java 8 or greater required. 
 
