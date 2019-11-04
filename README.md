@@ -13,8 +13,9 @@ This application can be run on any computer or server with no need for Tomcat. T
 
 A fully working prototype is [available here](https://nico-1.github.io/WebAuthentication). 
 
-Note: As of July 2019, fully passwordless authentication requires the latest Windows 10 (1903) and works on all major browsers on Windows (Edge, Firefox, Chrome).  Support from Safari on Mac is coming soon but available now on [Safari Technology Preview](https://developer.apple.com/safari/technology-preview/). 
-2-factor authentication, however is available on all major browsers on Windows (Edge, Firefox, Chrome)  while Mac users can use Firefox and Chrome. 
+Note: As of November 2019, fully passwordless authentication requires Windows 10 (1903) or later and works on all major browsers on Windows (Edge, Firefox, Chrome). 
+Safari, Firefox and Chrome on the latest Mac OS version 10.15 also support passwordless authentication with USB keys. Use of touch id as an authenticator is only available on Chrome for Mac. 
+2-factor authentication is available on all major browsers on Windows (Edge, Firefox, Chrome) and Mac.
 Android users can use Chrome and Firefox on Android for the same. 
 
 Device Registration
