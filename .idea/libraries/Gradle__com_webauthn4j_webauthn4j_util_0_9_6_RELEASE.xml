@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: com.webauthn4j:webauthn4j-util:0.9.6.RELEASE">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.webauthn4j/webauthn4j-util/0.9.6.RELEASE/2b49b41aaa4d15b66a908656a4aecd8c5e502392/webauthn4j-util-0.9.6.RELEASE.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.webauthn4j/webauthn4j-util/0.9.6.RELEASE/aee116817537146021f1c983f4231e9a5b538fb6/webauthn4j-util-0.9.6.RELEASE-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
