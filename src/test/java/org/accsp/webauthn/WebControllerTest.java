@@ -57,6 +57,7 @@ public class WebControllerTest {
                 .content(auth_request)
                 .accept(MediaType.APPLICATION_JSON)).andDo(print())
                 .andExpect(status().isOk());
+
     }
 
     @Test
