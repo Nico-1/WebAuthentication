@@ -1,6 +1,6 @@
 # WebAuthentication
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Java CI](https://github.com/Nico-1/WebAuthentication/workflows/Java%20CI/badge.svg)
 <br/>Web Authentication Compute library
 
 Thanks to the WebAuthn standard, device based authentication is here. And it can be used either as a 2nd factor or for truly passwordless authentication system. This library can be used inside and outside of the Java environment to do "webauthn-as-a-microservice".
