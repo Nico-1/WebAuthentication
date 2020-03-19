@@ -1,4 +1,5 @@
 var OChallenge;
+const URLEndPoint = "https://nicos.tech/webauthentication";
 
 
 $(window).on('load', function () {
@@ -94,7 +95,7 @@ function authenticateButtonClicked() {
  */
 function getChallenge() {
     return rest_get(
-        "https://safis.accsp.org:8443/webauthentication/challenge"
+        URLEndPoint + "/challenge"
     ).then(response => {
         if (response.error) {
             return Promise.reject(error);
@@ -196,7 +197,7 @@ function createCredential(challenge) {
         logVariable("clientDataJSON", attestation.clientDataJSON);
         logVariable("attestationObject (base64)", attestation.attestationObject);
 
-        return rest_put("https://safis.accsp.org:8443/webauthentication/registration", attestation);
+        return rest_put(URLEndPoint + "/registration", attestation);
     }).then(response => {
         if (response.error) {
             return Promise.reject(response.error);
@@ -267,7 +268,7 @@ function getAssertion(challenge) {
         logVariable("clientDataJSON", assertion.clientDataJSON);
         logVariable("signature (base64)", assertion.signature);
 
-        return rest_put("https://safis.accsp.org:8443/webauthentication/authenticate", assertion);
+        return rest_put(URLEndPoint + "/authenticate", assertion);
     }).then(response => {
         if (response.error) {
             return Promise.reject(response.error);
