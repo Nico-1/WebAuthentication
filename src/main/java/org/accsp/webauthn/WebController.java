@@ -38,7 +38,7 @@ import java.util.Calendar;
 import java.util.Map;
 
 //Allow and control cross-origin requests by uncommenting and modifying the line below
-//@CrossOrigin(origins = "https://nico-1.github.io", methods = {RequestMethod.OPTIONS,RequestMethod.GET,RequestMethod.PUT,RequestMethod.POST})
+@CrossOrigin(origins = "https://nico-1.github.io", methods = {RequestMethod.OPTIONS,RequestMethod.GET,RequestMethod.PUT,RequestMethod.POST})
 @RestController
 public class WebController {
 
