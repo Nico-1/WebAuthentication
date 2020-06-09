@@ -39,8 +39,8 @@
     <orderEntry type="library" name="Gradle: org.junit.jupiter:junit-jupiter-params:5.6.2" level="project" />
     <orderEntry type="library" name="Gradle: org.junit.jupiter:junit-jupiter-api:5.6.2" level="project" />
     <orderEntry type="library" name="Gradle: org.junit.platform:junit-platform-engine:1.6.2" level="project" />
-    <orderEntry type="library" name="Gradle: org.junit.platform:junit-platform-commons:1.6.2" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Gradle: commons-codec:commons-codec:1.14" level="project" />
+    <orderEntry type="library" name="Gradle: org.junit.platform:junit-platform-commons:1.6.2" level="project" />
     <orderEntry type="library" name="Gradle: org.junit.jupiter:junit-jupiter:5.6.2" level="project" />
     <orderEntry type="library" name="Gradle: org.mockito:mockito-junit-jupiter:3.3.3" level="project" />
     <orderEntry type="library" name="Gradle: org.mockito:mockito-core:3.3.3" level="project" />
@@ -51,8 +51,8 @@
     <orderEntry type="library" name="Gradle: org.springframework:spring-beans:5.2.6.RELEASE" level="project" />
     <orderEntry type="library" name="Gradle: org.springframework:spring-expression:5.2.6.RELEASE" level="project" />
     <orderEntry type="library" name="Gradle: org.springframework:spring-core:5.2.6.RELEASE" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Gradle: org.junit.jupiter:junit-jupiter-engine:5.6.2" level="project" />
     <orderEntry type="library" name="Gradle: org.xmlunit:xmlunit-core:2.7.0" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Gradle: org.junit.jupiter:junit-jupiter-engine:5.6.2" level="project" />
     <orderEntry type="library" name="Gradle: junit:junit:4.13" level="project" />
     <orderEntry type="library" name="Gradle: com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.11.0" level="project" />
     <orderEntry type="library" name="Gradle: com.fasterxml.jackson.core:jackson-annotations:2.11.0" level="project" />
