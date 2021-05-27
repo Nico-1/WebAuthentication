@@ -1,5 +1,5 @@
 var OChallenge;
-const URLEndPoint = "https://nicos.tech/webauthentication";
+const URLEndPoint = "https://safis.accsp.org/webauthentication";
 
 
 $(window).on('load', function () {
